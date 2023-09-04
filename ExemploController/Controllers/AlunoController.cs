@@ -8,7 +8,7 @@ namespace ExemploController.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class AlunoController : ControllerBase
+    public class AlunoController : PrincipalController
     {
         AlunoViewModel aluno = new AlunoViewModel();
         private readonly string _alunoCaminhoArquivo;
@@ -76,9 +76,9 @@ namespace ExemploController.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] NovoAlunoViewModel aluno)
         {
-            if (aluno == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             List<AlunoViewModel> alunos = LerAlunosDoArquivo();
             int proximoCodigo = ObterProximoCodigoDisponivel();
@@ -98,7 +98,8 @@ namespace ExemploController.Controllers
             alunos.Add(novoAluno);
             EscreverAlunosNoArquivo(alunos);
 
-            return CreatedAtAction(nameof(Get), new { codigo = novoAluno.Codigo }, novoAluno);
+            return ApiResponse(novoAluno, "Aluno criado com sucesso");
+            //return CreatedAtAction(nameof(Get), new { codigo = novoAluno.Codigo }, novoAluno);
 
         }
 
